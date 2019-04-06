@@ -21,7 +21,7 @@ public class Assembler {
 
 		String inputFileName, outputFileName;
 		PrintWriter outputFile = null; //keep compiler happy
-		SymbolTable symbolTable;
+		SymbolTable symbolTable = new SymbolTable();
 
 		//get input file name from command line or console input
 		if(args.length == 1) {
@@ -50,6 +50,7 @@ public class Assembler {
 		}
 
 		// TODO: finish driver as algorithm describes
+		firstPass(inputFileName, symbolTable);
 	}
 
 	// TODO: march through the source code without generating any code
@@ -57,8 +58,22 @@ public class Assembler {
 		// add the pair <LABEL, n> to the symbol table
 		// n = romAddress which you should keep track of as you go through each line
 	//HINT: when should rom address increase? For what kind of commands?
-	private static void firstPass(String inputFileName, SymbolTable symbolTable) {
-
+	private static void firstPass(String inputFileName, SymbolTable symbolTable)
+	{
+		Parser firstPass = new Parser(inputFileName);
+		int romAddress = 0;
+		while(firstPass.hasMoreCommands())
+		{
+			firstPass.advance();
+			if(firstPass.getCommandType() == firstPass.C_COMMAND || firstPass.getCommandType() == firstPass.A_COMMAND)
+			{
+				romAddress++;
+			}
+			else if(firstPass.getCommandType() == firstPass.L_COMMAND)
+			{
+				symbolTable.addEntry(firstPass.getSymbol(), romAddress);
+			}
+		}
 	}
 
 	// TODO: march again through the source code and process each line:
@@ -74,7 +89,42 @@ public class Assembler {
 	// HINT: What should ram address start at? When should it increase?
 	// What do you do with L commands and No commands?
 	private static void secondPass(String inputFileName, SymbolTable symbolTable, PrintWriter outputFile) {
+		Code codeObject = new Code();
+		Parser secondPass = new Parser(inputFileName);
+		int ramAddress = 16;
+		while(secondPass.hasMoreCommands())
+		{
+			secondPass.advance();
+			String output = "";
+			if(secondPass.getCommandType() == secondPass.C_COMMAND)
+			{
+				String comp = codeObject.getComp(secondPass.getComp());
 
+				String dest = codeObject.getDest(secondPass.getDest());
+
+				String jump = codeObject.getJump(secondPass.getJump());
+				if(comp.equals(null) || dest.equals(null) || jump.equals(null))
+				{
+					output = "111" + comp + dest + jump;
+				}
+
+			}
+			else if(secondPass.getCommandType() == secondPass.A_COMMAND)
+			{
+				String symbol = secondPass.getSymbol();
+				if(!symbolTable.contains(symbol))
+				{
+					symbolTable.addEntry(symbol, ramAddress);
+					ramAddress++;
+				}
+				output = "0" + codeObject.decimalToBinary(symbolTable.getAddress(symbol));
+			}
+			if(secondPass.getCommandType() != secondPass.NO_COMMAND && secondPass.getCommandType() != secondPass.L_COMMAND)
+			{
+				outputFile.println(output);
+			}
+		}
+		outputFile.close();
 	}
 
 

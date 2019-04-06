@@ -6,10 +6,10 @@ import java.util.Scanner;
 
 public class Parser
 {
-    public static char NO_COMMAND = 'N';
-    public static char A_COMMAND = 'A';
-    public static char C_COMMAND = 'C';
-    public static char L_COMMAND = 'L';
+    public static final char NO_COMMAND = 'N';
+    public static final char A_COMMAND = 'A';
+    public static final char C_COMMAND = 'C';
+    public static final char L_COMMAND = 'L';
 
     private Scanner inputFile;
     private int lineNumber;
@@ -24,8 +24,7 @@ public class Parser
     public Parser(String inFileName)
     {
         try {
-            File name = new File(inFileName);
-            inputFile = new Scanner(name);
+            inputFile = new Scanner(new File(inFileName));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(0);
@@ -109,15 +108,27 @@ public class Parser
     }
     public void parseDest()
     {
-
+        destMnemonic = "";
+        if(cleanLine.contains("="))
+        {
+            destMnemonic = cleanLine.substring(0, cleanLine.indexOf('='));
+        }
     }
     public void parseComp()
     {
-
+        compMnemonic = "";
+        if(cleanLine.contains("=") && cleanLine.contains(";") )
+        {
+            compMnemonic = cleanLine.substring(cleanLine.indexOf('=')+1);
+        }
     }
     public void parseJump()
     {
-
+        jumpMnemonic = "";
+        if(cleanLine.contains(";"))
+        {
+            jumpMnemonic = cleanLine.substring(cleanLine.indexOf(';')+1);
+        }
     }
 
     public char getCommandType() {
@@ -144,9 +155,6 @@ public class Parser
     {
         return Character.toString(commandType);
     }
-
-
-
     public String getRawLine() {
         return rawLine;
     }
