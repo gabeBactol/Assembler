@@ -29,10 +29,8 @@ public class Parser
             e.printStackTrace();
             System.exit(0);
         }
-        lineNumber = -1;
-
-
     }
+    
     public boolean hasMoreCommands()
     {
         if(inputFile.hasNext())
@@ -46,11 +44,9 @@ public class Parser
         }
     }
 
-
-
     public void advance()
     {
-        if(!hasMoreCommands())
+        if(hasMoreCommands())
         {
             rawLine = inputFile.nextLine();
             lineNumber++;
@@ -66,33 +62,40 @@ public class Parser
         {
             for(int number = 0; number < cleanLine.length(); number++)
             {
-                if(cleanLine.charAt(number) != '/' && number+1 != cleanLine.length() && cleanLine.charAt(number+1) != '/')
+                if(cleanLine.charAt(number) == '/' && number+1 != 
+						cleanLine.length() && cleanLine.charAt(number+1) 
+																== '/')
                 {
                     cleanLine = cleanLine.substring(0, number);
+                    break;
                 }
             }
-
         }
     }
     private void parseCommandType()
     {
-        char c = cleanLine.charAt(0);
-        if(c == '@')
-        {
-            commandType = A_COMMAND;
-        }
-        else if(c == '(')
-        {
-            commandType = L_COMMAND;
-        }
-        else if(cleanLine.equals(""))
+		if(cleanLine.equals(""))
         {
             commandType = NO_COMMAND;
         }
         else
         {
-            commandType = C_COMMAND;
-        }
+			char c = cleanLine.charAt(0);
+	        
+	        if(c == '@')
+	        {
+	            commandType = A_COMMAND;
+	        }
+	        else if(c == '(')
+	        {
+	            commandType = L_COMMAND;
+	        }
+	        
+	        else
+	        {
+	            commandType = C_COMMAND;
+	        }
+		}  
     }
     private void parse()
     {
@@ -116,12 +119,28 @@ public class Parser
     }
     public void parseComp()
     {
-        compMnemonic = "";
-        if(cleanLine.contains("=") && cleanLine.contains(";") )
-        {
-            compMnemonic = cleanLine.substring(cleanLine.indexOf('=')+1);
-        }
+		int start = 0;
+		int end = 0;
+		if(cleanLine.contains("="))
+		{
+			start = cleanLine.indexOf("=")+1;
+		}
+		else
+		{
+			start = 0;
+		}
+		
+		if(cleanLine.contains(";"))
+		{
+			end = cleanLine.indexOf(";");
+		}
+		else
+		{
+			end = cleanLine.length();
+		}
+		compMnemonic = cleanLine.substring(start, end);
     }
+    
     public void parseJump()
     {
         jumpMnemonic = "";
@@ -146,11 +165,9 @@ public class Parser
     public String getComp() {
         return compMnemonic;
     }
-
     public String getJump() {
         return jumpMnemonic;
     }
-
     public String getCommandTypeString()
     {
         return Character.toString(commandType);
@@ -158,13 +175,10 @@ public class Parser
     public String getRawLine() {
         return rawLine;
     }
-
     public String getCleanLine() {
         return cleanLine;
     }
     public int getLineNumber() {
         return lineNumber;
     }
-
-
 }

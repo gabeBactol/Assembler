@@ -34,7 +34,7 @@ public class SymbolTable
     }
     public boolean addEntry(String symbol, int address)
     {
-        if(!contains(symbol) || !isValidName(symbol))
+        if(!contains(symbol) || isValidName(symbol))
         {
             symbolTable.put(symbol, address);
             return true;

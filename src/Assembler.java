@@ -51,6 +51,7 @@ public class Assembler {
 
 		// TODO: finish driver as algorithm describes
 		firstPass(inputFileName, symbolTable);
+		secondPass(inputFileName, symbolTable, outputFile);
 	}
 
 	// TODO: march through the source code without generating any code
@@ -65,7 +66,8 @@ public class Assembler {
 		while(firstPass.hasMoreCommands())
 		{
 			firstPass.advance();
-			if(firstPass.getCommandType() == firstPass.C_COMMAND || firstPass.getCommandType() == firstPass.A_COMMAND)
+			if(firstPass.getCommandType() == firstPass.C_COMMAND ||
+					firstPass.getCommandType() == firstPass.A_COMMAND)
 			{
 				romAddress++;
 			}
@@ -94,6 +96,7 @@ public class Assembler {
 		int ramAddress = 16;
 		while(secondPass.hasMoreCommands())
 		{
+			
 			secondPass.advance();
 			String output = "";
 			if(secondPass.getCommandType() == secondPass.C_COMMAND)
@@ -103,28 +106,45 @@ public class Assembler {
 				String dest = codeObject.getDest(secondPass.getDest());
 
 				String jump = codeObject.getJump(secondPass.getJump());
-				if(comp.equals(null) || dest.equals(null) || jump.equals(null))
+				if(comp == null || dest == null || jump == null)
 				{
-					output = "111" + comp + dest + jump;
+					System.out.println("Invalid C Instructions. " +
+							"Check the .asm file again.\n");
+					System.exit(0);
 				}
+				
+				output = "111" + comp + dest + jump;
 
 			}
 			else if(secondPass.getCommandType() == secondPass.A_COMMAND)
 			{
 				String symbol = secondPass.getSymbol();
-				if(!symbolTable.contains(symbol))
+				if(symbol.matches("\\d+"))
 				{
-					symbolTable.addEntry(symbol, ramAddress);
-					ramAddress++;
+					output = "0" + codeObject.decimalToBinary(
+										Integer.parseInt(symbol));
 				}
-				output = "0" + codeObject.decimalToBinary(symbolTable.getAddress(symbol));
+				else
+				{
+					if(!symbolTable.contains(symbol))
+					{
+						symbolTable.addEntry(symbol,ramAddress);
+						ramAddress++;
+					}
+					output = "0" + codeObject.decimalToBinary(
+										symbolTable.getAddress(symbol));
+				}
 			}
-			if(secondPass.getCommandType() != secondPass.NO_COMMAND && secondPass.getCommandType() != secondPass.L_COMMAND)
+			if(secondPass.getCommandType() != secondPass.NO_COMMAND &&
+					secondPass.getCommandType() != secondPass.L_COMMAND)
 			{
 				outputFile.println(output);
 			}
 		}
+		
 		outputFile.close();
+		System.out.println("The program has ended, and the " + 
+							".hack file has been created.");
 	}
 
 

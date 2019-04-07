@@ -110,19 +110,20 @@ public class Code
     }
     public String decimalToBinary(int decimal)
     {
-        String result = "";
-        while(decimal != 0)
+        String binary = "";
+        for(int i = 0; i < 15; i++)
         {
             if(decimal%2!=0)
             {
-                result = "1" + result;
+                binary = "1" + binary;
             }
             else
             {
-                result =  "0" + result;
+                binary =  "0" + binary;
             }
+            decimal/=2;
         }
-        return result;
+        return binary;
     }
 
 }
