@@ -1,10 +1,19 @@
 import java.util.HashMap;
-
+/**
+ * SymbolTable.java: A java class that holds a a HashMap containing symbols, which is added through
+ * the Assembler class.
+ * @author Gabriel Bactol
+ * @version 4.0
+ */
 public class SymbolTable
 {
     private String INITIAL_VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.$:";;
     private String ALL_VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.$:1234567890";
     private HashMap<String, Integer> symbolTable;
+
+    //DESCRIPTION:   initializes hashmap with predefined symbols
+    //PRECONDITION:  follows symbols/values from book/appendix
+    //POSTCONDITION: all hashmap values have valid address integer
     public SymbolTable()
     {
         symbolTable = new HashMap<>();
@@ -32,6 +41,10 @@ public class SymbolTable
         symbolTable.put("THIS"  ,3    );
         symbolTable.put("THAT"  ,4    );
     }
+
+    //DESCRIPTION:   adds new pair of symbol/address to hashmap
+    //PRECONDITION:  symbol/address pair not in hashmap (check contains() 1st)
+    //POSTCONDITION: adds pair, returns true if added, false if illegal name
     public boolean addEntry(String symbol, int address)
     {
         if(!contains(symbol) || isValidName(symbol))
@@ -44,6 +57,10 @@ public class SymbolTable
             return false;
         }
     }
+
+    //DESCRIPTION:   returns boolean of whether hashmap has symbol or not
+    //PRECONDITION:  table has been initialized
+    //POSTCONDITION: returns boolean if arg is in table or not
     public boolean contains(String symbol)
     {
         if(symbolTable.containsKey(symbol))
@@ -55,6 +72,10 @@ public class SymbolTable
             return false;
         }
     }
+
+    //DESCRIPTION:   returns address in hashmap of given symbol
+    //PRECONDITION:  symbol is in hashmap (check w/ contains() first)
+    //POSTCONDITION: returns address associated with symbol in hashmap
     public int getAddress(String symbol)
     {
         if(symbolTable.containsKey(symbol))
@@ -66,6 +87,10 @@ public class SymbolTable
             return -1;
         }
     }
+
+    //DESCRIPTION:   checks validity of identifiers for assembly code symbols
+    //PRECONDITION:  start with letters or “_.$:” only, numbers allowed after
+    //POSTCONDITION: returns true if valid identifier, false otherwise
     private boolean isValidName(String symbol)
     {
         char c  = 'a';

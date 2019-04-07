@@ -1,5 +1,9 @@
-//Author info here
-//TODO: don't forget to document each method in all classes!
+/**
+ *	Assembler.java: Reads an .asm file and converts it into a .hack file containing
+ *					binary numbers.
+ * @author Gabriel Bactol
+ * @version 4.0
+ */
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -66,15 +70,16 @@ public class Assembler {
 		while(firstPass.hasMoreCommands())
 		{
 			firstPass.advance();
-			if(firstPass.getCommandType() == firstPass.C_COMMAND ||
+			if(firstPass.getCommandType() == firstPass.L_COMMAND)
+            {
+                symbolTable.addEntry(firstPass.getSymbol(), romAddress);
+            }
+			else if(firstPass.getCommandType() == firstPass.C_COMMAND ||
 					firstPass.getCommandType() == firstPass.A_COMMAND)
 			{
 				romAddress++;
 			}
-			else if(firstPass.getCommandType() == firstPass.L_COMMAND)
-			{
-				symbolTable.addEntry(firstPass.getSymbol(), romAddress);
-			}
+
 		}
 	}
 
@@ -94,51 +99,52 @@ public class Assembler {
 		Code codeObject = new Code();
 		Parser secondPass = new Parser(inputFileName);
 		int ramAddress = 16;
+		String c,d,j;
 		while(secondPass.hasMoreCommands())
 		{
-			
 			secondPass.advance();
-			String output = "";
-			if(secondPass.getCommandType() == secondPass.C_COMMAND)
+			String result = "";
+			if(secondPass.getCommandType() == secondPass.A_COMMAND)
+            {
+                String symbol = secondPass.getSymbol();
+                if(symbol.matches("\\d+"))
+                {
+                    result = "0" + codeObject.decimalToBinary(
+                            Integer.parseInt(symbol));
+                }
+                else
+                {
+                    if(!symbolTable.contains(symbol))
+                    {
+                        symbolTable.addEntry(symbol,ramAddress);
+                        ramAddress++;
+                    }
+                    result = "0" + codeObject.decimalToBinary(
+                            symbolTable.getAddress(symbol));
+                }
+            }
+			else if(secondPass.getCommandType() == secondPass.C_COMMAND)
 			{
-				String comp = codeObject.getComp(secondPass.getComp());
+				c = codeObject.getComp(secondPass.getComp());
 
-				String dest = codeObject.getDest(secondPass.getDest());
+				d = codeObject.getDest(secondPass.getDest());
 
-				String jump = codeObject.getJump(secondPass.getJump());
-				if(comp == null || dest == null || jump == null)
+				j = codeObject.getJump(secondPass.getJump());
+				if(c == null || d == null || j == null)
 				{
 					System.out.println("Invalid C Instructions. " +
 							"Check the .asm file again.\n");
 					System.exit(0);
 				}
-				
-				output = "111" + comp + dest + jump;
+
+                result = "111" + c + d + j;
 
 			}
-			else if(secondPass.getCommandType() == secondPass.A_COMMAND)
-			{
-				String symbol = secondPass.getSymbol();
-				if(symbol.matches("\\d+"))
-				{
-					output = "0" + codeObject.decimalToBinary(
-										Integer.parseInt(symbol));
-				}
-				else
-				{
-					if(!symbolTable.contains(symbol))
-					{
-						symbolTable.addEntry(symbol,ramAddress);
-						ramAddress++;
-					}
-					output = "0" + codeObject.decimalToBinary(
-										symbolTable.getAddress(symbol));
-				}
-			}
+
 			if(secondPass.getCommandType() != secondPass.NO_COMMAND &&
 					secondPass.getCommandType() != secondPass.L_COMMAND)
 			{
-				outputFile.println(output);
+				outputFile.println(result);
 			}
 		}
 		

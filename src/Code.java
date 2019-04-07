@@ -1,11 +1,19 @@
 import java.util.HashMap;
-
+/**
+ * Code.java: Holds a list of the comp, dest, and jump codes, and allows the program to access
+ * them. It also includes a method to convert decimal numbers into binary.
+ * @author Gabriel Bactol
+ * @version 4.0
+ */
 public class Code
 {
     private HashMap<String, String> compCodes;
     private HashMap<String, String> destCodes;
     private HashMap<String, String> jumpCodes;
 
+    //DESCRIPTION:   initializes hashmaps with binary codes for easy lookup
+    //PRECONDITION:  comp codes = 7 bits (includes a), dest/jump codes = 3 bits
+    //POSTCONDITION: all hashmaps have lookups for valid codes
     public Code()
     {
         compCodes = new HashMap<>();
@@ -75,6 +83,10 @@ public class Code
         jumpCodes.put("JLE","110");
         jumpCodes.put("JMP","111");
     }
+
+    //DESCRIPTION:   converts to string of bits (7) for given mnemonic
+    //PRECONDITION:  hashmaps are built with valid values
+    //POSTCONDITION: returns string of bits if valid, else returns null
     public String getComp(String mnemonic)
     {
         if(compCodes.containsKey(mnemonic))
@@ -86,6 +98,10 @@ public class Code
             return null;
         }
     }
+
+    //DESCRIPTION:   converts to string of bits (3) for given mnemonic
+    //PRECONDITION:  hashmaps are built with valid values
+    //POSTCONDITION: returns string of bits if valid, else returns null
     public String getDest(String mnemonic)
     {
         if(destCodes.containsKey(mnemonic))
@@ -97,6 +113,10 @@ public class Code
             return null;
         }
     }
+
+    //DESCRIPTION:   converts to string of bits (3) for given mnemonic
+    //PRECONDITION:  hashmaps are built with valid values
+    //POSTCONDITION: returns string of bits if valid, else returns null
     public String getJump(String mnemonic)
     {
         if(jumpCodes.containsKey(mnemonic))
@@ -108,6 +128,10 @@ public class Code
             return null;
         }
     }
+
+    //DESCRIPTION:   converts integer from decimal notation to binary notation
+    //PRECONDITION:  number is valid size for architecture, non-negative
+    //POSTCONDITION: returns 15-bit string of binary digits (first char is MSB)
     public String decimalToBinary(int decimal)
     {
         String binary = "";
