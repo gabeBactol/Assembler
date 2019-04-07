@@ -89,7 +89,7 @@ public class SymbolTable
     }
 
     //DESCRIPTION:   checks validity of identifiers for assembly code symbols
-    //PRECONDITION:  start with letters or “_.$:” only, numbers allowed after
+    //PRECONDITION:  start with letters or "_.$:" only, numbers allowed after
     //POSTCONDITION: returns true if valid identifier, false otherwise
     private boolean isValidName(String symbol)
     {
